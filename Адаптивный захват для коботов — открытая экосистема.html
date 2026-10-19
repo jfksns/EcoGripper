@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoGripper Digital Ecosystem — Цифровая база и реестр наработок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;
+  --surface: #131b26;
+  --surface-card: #182232;
+  --ink: #f1f5f9;
+  --muted: #94a3b8;
+  --line: #243144;
+  --line-accent: #3b82f6;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --sig: #10b981;
+  --tint: rgba(37, 99, 235, 0.1);
+  box-sizing: border-box;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.5 "Golos Text", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Golos Text", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+h1 { font-size: clamp(26px, 3.8vw, 42px); font-weight: 700; }
+h2 { font-size: clamp(20px, 2.8vw, 28px); }
+h3 { font-size: 16px; }
+
+p { margin: 0 0 12px; }
+a { color: #60a5fa; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+/* Шапка */
+header.top {
+  position: sticky;
+  top: 0;
+  background: rgba(19, 27, 38, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  z-index: 1000;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+.brand {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.brand i { width: 10px; height: 10px; background: var(--sig); border-radius: 50%; box-shadow: 0 0 10px var(--sig); }
+
+nav.menu { display: flex; gap: 6px; align-items: center; }
+nav.menu a {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 13.5px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+nav.menu a:hover, nav.menu a.active {
+  color: #ffffff;
+  background: var(--surface-card);
+  text-decoration: none;
+}
+
+.auth-badge {
+  background: var(--accent);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.auth-badge:hover { background: var(--accent-hover); }
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+@media (max-width: 1020px) {
+  .menu-toggle { display: block; }
+  nav.menu {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0; right: 0;
+    background: var(--surface);
+    flex-direction: column;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    align-items: flex-start;
+  }
+  nav.menu.open { display: flex; }
+}
+
+.page { display: none; padding: 40px 0 60px; }
+.page.active { display: block; }
+
+.hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; }
+@media (max-width: 880px) { .hero-grid { grid-template-columns: 1fr; } }
+
+.hero-img {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  aspect-ratio: 4/3;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.hero-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.ghost:hover { background: var(--surface-card); }
+.btn.danger { background: #ef4444; }
+.btn.danger:hover { background: #dc2626; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-top: 24px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-top: 24px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+}
+.mono { font-family: "JetBrains Mono", monospace; font-size: 12.5px; color: var(--muted); }
+
+/* Модальные окна */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(11, 15, 23, 0.8);
+  z-index: 2000;
+  place-items: center;
+  backdrop-filter: blur(4px);
+}
+.modal.open { display: grid; }
+.modal-content {
+  background: var(--surface);
+  padding: 28px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 540px;
+  border: 1px solid var(--line);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--muted); }
+.form-group select, .form-group input, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.tab-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.tab-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.tab-btn.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+
+.bar { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.bar-fill { height: 100%; background: var(--sig); transition: width 0.3s; }
+
+/* Реестр и таблицы */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.search-input {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  min-width: 240px;
+}
+
+table.registry { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.registry th, table.registry td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+table.registry th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; background: var(--surface-card); }
+table.registry tr:hover { background: rgba(255,255,255,0.02); }
+
+.badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", monospace;
+}
+.status-ok { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.status-wait { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+footer {
+  margin-top: auto;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding: 28px 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap header-inner">
+    <a href="#" class="brand" onclick="navigate('home')"><i></i>ECOGRIPPER // DIGITAL_HUB</a>
+    <button class="menu-toggle" id="menuBtn">☰</button>
+    <nav class="menu" id="menuNav">
+      <a href="#" class="nav-link active" onclick="navigate('home')">Обзор</a>
+      <a href="#" class="nav-link" onclick="navigate('docs')">Реестр & Верификация</a>
+      <a href="#" class="nav-link" onclick="navigate('design')">Конструкция</a>
+      <a href="#" class="nav-link" onclick="navigate('electronics')">Электроника</a>
+      <a href="#" class="nav-link" onclick="navigate('cad-tools')">Инструменты ЕСКД</a>
+      <a href="#" class="nav-link" onclick="navigate('about')">О проекте</a>
+      <button class="auth-badge" id="authBtn" onclick="toggleAuthModal()">Авторизация</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ГЛАВНАЯ -->
+  <section id="page-home" class="page active">
+    <div class="hero-grid">
+      <div>
+        <div class="mono" style="color: var(--sig); margin-bottom: 10px;">ВЕРИФИЦИРОВАННАЯ БАЗА ЗНАНИЙ // ГРГУ ИМ. ЯНКИ КУПАЛЫ</div>
+        <h1>EcoGripper: Открытый реестр и экосистема кобототехники</h1>
+        <p style="color: var(--muted); font-size: 16px;">Универсальная инженерная платформа адаптивных захватов. Единый цифровой хаб для обмена 3D-моделями (STL/STEP), документацией по ЕСКД и верификации наработок предприятий и исследователей.</p>
+        <div style="display:flex; gap:12px; margin-top: 28px; flex-wrap:wrap;">
+          <button class="btn" onclick="navigate('docs')">Перейти в Реестр наработок</button>
+          <button class="btn ghost" onclick="navigate('design')">Спецификация КОМПАС-3D</button>
+        </div>
+      </div>
+      <div class="hero-img">
+        <img src="nesemnaya.png" alt="Несъемный корпус EcoGripper">
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top: 48px;">
+      <div class="card">
+        <div class="mono" style="color:var(--sig);">01 // ВЕРИФИКАЦИЯ</div>
+        <h3 style="margin-top: 8px;">Реестр наработок</h3>
+        <p style="color: var(--muted); font-size: 14px;">Публичный банк проверенных модулей и насадок с онлайн-просмотром параметров и паспортов изделий.</p>
+      </div>
+      <div class="card">
+        <div class="mono" style="color:var(--sig);">02 // АДАПТИВНОСТЬ</div>
+        <h3 style="margin-top: 8px;">Байонетная стыковка</h3>
+        <p style="color: var(--muted); font-size: 14px;">Быстросменное сопряжение модулей без остановки линии. Резьбовая фиксация к фланцу кобота.</p>
+      </div>
+      <div class="card">
+        <div class="mono" style="color:var(--sig);">03 // ДОСТУПНОСТЬ</div>
+        <h3 style="margin-top: 8px;">PLA/PETG & Металлы</h3>
+        <p style="color: var(--muted); font-size: 14px;">Минимальная себестоимость печати для лабораторий и возможность перехода на D16T/SLM для промышленности.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- РЕЕСТР И ВЕРИФИКАЦИЯ -->
+  <section id="page-docs" class="page">
+    <h2>Единый открытый реестр и банк наработок EcoGripper</h2>
+    <p style="color: var(--muted);">Управление доступом, онлайн-просмотр паспортов модулей и подача разработок на верификацию.</p>
+
+    <div id="lock-banner" class="card" style="background: var(--surface-card); border-color: var(--line-accent); margin-bottom: 24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h3 style="margin:0 0 6px;">Доступ к верификации и скачиванию CAD-исходников</h3>
+          <p style="color: var(--muted); font-size: 14px; margin:0;">Для скачивания рабочих STEP/STL файлов и публикации собственных модулей требуется авторизация.</p>
+        </div>
+        <button class="btn" onclick="openModal('authModal')">Войти в аккаунт</button>
+      </div>
+    </div>
+
+    <div id="protected-content" style="opacity: 0.4; pointer-events: none; transition: 0.25s;">
+      <div class="card" style="margin-bottom: 24px; border-color: var(--sig); background: rgba(16, 185, 129, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h3 style="margin:0 0 4px;">Загрузка собственной разработки на верификацию</h3>
+            <p style="color: var(--muted); font-size: 13.5px; margin:0;">Подайте ваш чертеж или 3D-модель на проверку экспертным советом ГрГУ им. Янки Купалы.</p>
+          </div>
+          <button class="btn" onclick="openModal('uploadModal')">+ Загрузить наработку</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>База проверенных конструкторских решений</h3>
+      
+      <div class="filter-bar">
+        <div class="tab-buttons" style="margin:0;">
+          <button class="tab-btn active" onclick="filterRegistry('all')">Все модули</button>
+          <button class="tab-btn" onclick="filterRegistry('official')">Официальный релиз ГрГУ</button>
+          <button class="tab-btn" onclick="filterRegistry('company')">Предприятия РБ</button>
+          <button class="tab-btn" onclick="filterRegistry('wait')">На верификации</button>
+        </div>
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию или механизму..." onkeyup="searchRegistry()">
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="registry" id="registryTable">
+          <thead>
+            <tr>
+              <th>Автор / Организация</th>
+              <th>Наименование насадки</th>
+              <th>Кинематика / Передача</th>
+              <th>Паспорт</th>
+              <th>Файлы</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody id="registryBody">
+            <tr data-type="official">
+              <td><b>Коротинская Л.К.</b><br><span class="mono">ГрГУ им. Янки Купалы</span></td>
+              <td>Трехпальцевый самоцентрирующийся захват</td>
+              <td>Цилиндрическая кривозубая (ход 35 мм)</td>
+              <td><a href="#" onclick="viewPassport('Трехпальцевый захват', 'Коротинская Л.К.', 'Цилиндрическая кривозубая', '35 мм', '145 г', 'Тара типа тел вращения, колбы, флаконы')">Паспорт 📄</a></td>
+              <td><a href="#" onclick="downloadFile('ThreeFinger_Gripper_v1.zip')">STEP, STL, ЕСКД</a></td>
+              <td><span class="badge-status status-ok">✔ Оф. Релиз</span></td>
+            </tr>
+            <tr data-type="company">
+              <td><b>ООО «Системы пром. автом.»</b><br><span class="mono">г. Гродно</span></td>
+              <td>Вакуумно-механический модуль паллетирования</td>
+              <td>Пневмо-механический зажим</td>
+              <td><a href="#" onclick="viewPassport('Вакуумно-механический модуль', 'ООО СПА', 'Пневмо-механика', '50 мм', '310 г', 'Плоская тара, коробки')">Паспорт 📄</a></td>
+              <td><a href="#" onclick="downloadFile('SPA_Vacuum_Module.step')">STEP, CAD</a></td>
+              <td><span class="badge-status status-ok">✔ Верифицировано</span></td>
+            </tr>
+            <tr data-type="official">
+              <td><b>Коротинская Л.К.</b><br><span class="mono">ГрГУ им. Янки Купалы</span></td>
+              <td>Стандартная насадка №1 (узкий зажим)</td>
+              <td>Коническая прямозубая (ход 23 мм)</td>
+              <td><a href="#" onclick="viewPassport('Стандартная насадка №1', 'Коротинская Л.К.', 'Коническая прямозубая', '23 мм', '110 г', 'Мелкие коробки, детали')">Паспорт 📄</a></td>
+              <td><a href="#" onclick="downloadFile('Std_Gripper_N1.zip')">STL, Чертежи</a></td>
+              <td><span class="badge-status status-ok">✔ Оф. Релиз</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- КОНСТРУКЦИЯ -->
+  <section id="page-design" class="page">
+    <h2>Конструктивная компоновка в САПР КОМПАС-3D</h2>
+    <p style="color: var(--muted);">Модульная система трех узлов с гарантированной соосностью вала привода и насадки.</p>
+
+    <div class="grid-3" style="margin-bottom: 24px;">
+      <div class="card" style="text-align:center;">
+        <img src="kreplenie.png" alt="Крепление" style="max-height: 130px; margin-bottom: 12px;">
+        <div class="mono" style="color:var(--sig);">УЗЕЛ 1</div>
+        <h3>Крепление к оси робота</h3>
+        <p style="font-size:13.5px; color:var(--muted);">Резьбовое сопряжение с фланцем кобота</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <img src="nesemnaya.png" alt="Корпус" style="max-height: 130px; margin-bottom: 12px;">
+        <div class="mono" style="color:var(--sig);">УЗЕЛ 2</div>
+        <h3>Несъёмный корпус</h3>
+        <p style="font-size:13.5px; color:var(--muted);">Цилиндрический модуль со стойкой привода</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <img src="semnaya.png" alt="Сменный модуль" style="max-height: 130px; margin-bottom: 12px;">
+        <div class="mono" style="color:var(--sig);">УЗЕЛ 3</div>
+        <h3>Байонетный замок</h3>
+        <p style="font-size:13.5px; color:var(--muted);">Быстросъемная фиксация рабочих органов</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="mono" style="margin-bottom: 12px;">БАЗОВАЯ ЛИНЕЙКА НАСАДОК</div>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="setModule(0)">Стандартная №1</button>
+        <button class="tab-btn" onclick="setModule(1)">Стандартная №2</button>
+        <button class="tab-btn" onclick="setModule(2)">Трехпальцевый</button>
+        <button class="tab-btn" onclick="setModule(3)">Для маркеров</button>
+      </div>
+
+      <div class="grid-2" style="align-items: center; margin-top: 0;">
+        <div>
+          <h3 id="m-name">Стандартная насадка №1</h3>
+          <p id="m-desc" style="color: var(--muted); font-size: 14px;">Для захвата и удержания мелких деталей и коробок в условиях ограниченного пространства.</p>
+          <p style="font-size: 14px;"><b>Кинематическая передача:</b> <span id="m-mech">Коническая прямозубая</span></p>
+          <p style="font-size: 14px;"><b>Величина рабочего хода:</b> <span id="m-stroke">23</span> мм</p>
+          <div class="bar"><div class="bar-fill" id="m-bar" style="width: 48%;"></div></div>
+        </div>
+        <div style="text-align: center; background: var(--bg); border-radius: 8px; padding: 20px; border: 1px solid var(--line);">
+          <img id="m-img" src="zahvat1.png" alt="Насадка" style="max-height: 200px; display: block; margin: 0 auto;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ЭЛЕКТРОНИКА -->
+  <section id="page-electronics" class="page">
+    <h2>Электронный модуль управления</h2>
+    <p style="color: var(--muted);">Аппаратное обеспечение автономной работы и беспроводной связи.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Спецификация компонентов</h3>
+        <ul style="padding-left: 18px; margin: 0; color: var(--muted); font-size: 14px;">
+          <li><b>Микроконтроллер:</b> ESP32 Super Mini (Wi-Fi/Bluetooth)</li>
+          <li><b>Источник питания:</b> Li-Ion 18650 (1300 мАч, 3.6В)</li>
+          <li><b>Защитный модуль:</b> BMS 2S 20A (7.4В–8.4В)</li>
+          <li><b>Преобразователь:</b> HW-613 DC-DC (до 3А)</li>
+          <li><b>Силовой привод:</b> Сервопривод MG996R (2.5А в пике)</li>
+          <li><b>Беспроводная связь:</b> ИК TSOP31238 (38 кГц, до 45 м)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Режимы управления и перспективы</h3>
+        <p style="color: var(--muted); font-size: 14px;"><b>Управление:</b> Локальное (кнопки на корпусе) и дистанционное (ИК-пульт).</p>
+        <p style="color: var(--muted); font-size: 14px;"><b>Модернизация прототипа:</b> Разработка компактной печатной платы (PCB), интеграция протоколов ROS 2 и создание мобильного приложения оператора.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ИНСТРУМЕНТЫ ЕСКД И CAD -->
+  <section id="page-cad-tools" class="page">
+    <h2>Профессиональные инженерные инструменты</h2>
+    <p style="color: var(--muted);">Вспомогательные модули для подготовки конструкторской документации по ГОСТ.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Генератор спецификации по ГОСТ 2.106</h3>
+        <p style="color: var(--muted); font-size: 13.5px;">Автоматическое формирование таблицы спецификации сборочной единицы для КОМПАС-3D.</p>
+        <div class="form-group">
+          <label>Обозначение документа:</label>
+          <input type="text" id="specCode" value="ГрГУ.6050713.001 СБ">
+        </div>
+        <button class="btn" onclick="generateSpec()">Сформировать спецификацию</button>
+        <div id="specOutput" class="mono" style="margin-top:12px; background:var(--bg); padding:10px; border-radius:4px; display:none;"></div>
+      </div>
+
+      <div class="card">
+        <h3>Калькулятор посадочных допусков байонета</h3>
+        <p style="color: var(--muted); font-size: 13.5px;">Расчет зазора байонетно-поворотного замка с учетом усадки FDM-пластика (PLA/PETG).</p>
+        <div class="form-group">
+          <label>Коэффициент усадки материала (%):</label>
+          <input type="number" id="shrinkRate" value="0.4" step="0.1">
+        </div>
+        <button class="btn ghost" onclick="calcFit()">Рассчитать технологический зазор</button>
+        <div id="fitOutput" class="mono" style="margin-top:12px; color:var(--sig);"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- О ПРОЕКТЕ -->
+  <section id="page-about" class="page">
+    <h2>О проекте «Молодёжная инициатива»</h2>
+    <p style="color: var(--muted);">Разработка ГрГУ им. Янки Купалы для автоматизации предприятий Республики Беларусь.</p>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="card">
+        <h3>Активы и производственная база</h3>
+        <p style="color: var(--muted); font-size: 14px;">Разработка ведется студентами специальности «Робототехнические системы». Проект ориентирован на решение реальных проблем предприятий (анализ ОАО «Малоритский КОК» и решений ООО «Системы промышленной автоматизации»).</p>
+      </div>
+      <div class="card">
+        <h3>Практическая интеграция</h3>
+        <p style="color: var(--muted); font-size: 14px;">Внедрение в лабораторные работы ГрГУ, проведение профориентационных мастер-классов для школьников, а также организация практик студентов на заводах г. Гродно.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ И ЛИЧНЫЙ КАБИНЕТ -->
+<div class="modal" id="authModal">
+  <div class="modal-content">
+    <div id="authFormArea">
+      <h3>Авторизация в экосистеме EcoGripper</h3>
+      <p style="color: var(--muted); font-size: 13.5px; margin-bottom: 16px;">Выберите статус аккаунта для работы с реестром.</p>
+      <div class="form-group">
+        <label>Категория учетной записи:</label>
+        <select id="accType">
+          <option value="company">Предприятие / Промышленный интегратор</option>
+          <option value="person">Студент ГрГУ / Исследователь / Физлицо</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Наименование организации / ФИО:</label>
+        <input type="text" id="accName" placeholder="Например: Коротинская Л.К. или ОАО «Завод»">
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 24px;">
+        <button class="btn" style="flex:1;" onclick="handleLogin()">Войти</button>
+        <button class="btn ghost" style="flex:1;" onclick="closeModal('authModal')">Отмена</button>
+      </div>
+    </div>
+
+    <div id="profileArea" style="display:none;">
+      <h3>Профиль участника</h3>
+      <div style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--line); margin-bottom:16px;">
+        <p style="margin:0; font-weight:600;" id="profName">Имя пользователя</p>
+        <p style="margin:4px 0 0; font-size:13px; color:var(--muted);" id="profType">Категория</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn danger" style="flex:1;" onclick="handleLogout()">Выйти из аккаунта</button>
+        <button class="btn ghost" style="flex:1;" onclick="closeModal('authModal')">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ЗАГРУЗКА НАРАБОТКИ -->
+<div class="modal" id="uploadModal">
+  <div class="modal-content">
+    <h3>Подача модуля в единый реестр</h3>
+    <p style="color: var(--muted); font-size: 13.5px; margin-bottom: 16px;">Заполните паспорт насадки для экспертной оценки ГрГУ.</p>
+    <div class="form-group">
+      <label>Наименование насадки:</label>
+      <input type="text" id="upTitle" placeholder="Например: Пневмо-захват для бутилированной тары">
+    </div>
+    <div class="form-group">
+      <label>Тип передачи / кинематики:</label>
+      <input type="text" id="upMech" placeholder="Например: Кулисно-рычажный механизм">
+    </div>
+    <div class="form-group">
+      <label>Прикрепляемый файл (CAD/STL/STEP):</label>
+      <input type="file" id="upFile" style="background:none; border:none; padding:0;">
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 20px;">
+      <button class="btn" style="flex:1;" onclick="handleUpload()">Отправить на верификацию</button>
+      <button class="btn ghost" style="flex:1;" onclick="closeModal('uploadModal')">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ПАСПОРТ МОДУЛЯ -->
+<div class="modal" id="passportModal">
+  <div class="modal-content">
+    <h3 id="passTitle">Паспорт изделия</h3>
+    <div style="background:var(--bg); padding:16px; border-radius:8px; border:1px solid var(--line); font-size:13.5px; margin-bottom:16px;">
+      <p><b>Разработчик:</b> <span id="passAuthor">-</span></p>
+      <p><b>Кинематическая схема:</b> <span id="passMech">-</span></p>
+      <p><b>Рабочий ход:</b> <span id="passStroke">-</span></p>
+      <p><b>Масса модуля:</b> <span id="passWeight">-</span></p>
+      <p style="margin:0;"><b>Рекомендуемая тара:</b> <span id="passTarget">-</span></p>
+    </div>
+    <button class="btn" style="width:100%;" onclick="closeModal('passportModal')">Закрыть паспорт</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="mono">© 2026 ECOGRIPPER DIGITAL HUB // ГРГУ ИМ. ЯНКИ КУПАЛЫ // КОРОТИНСКАЯ Л.К.</div>
+  </div>
+</footer>
+
+<script>
+function navigate(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  
+  const target = document.getElementById('page-' + pageId);
+  if(target) target.classList.add('active');
+  
+  const link = Array.from(document.querySelectorAll('.nav-link')).find(l => l.getAttribute('onclick').includes(pageId));
+  if(link) link.classList.add('active');
+
+  document.getElementById('menuNav').classList.remove('open');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.getElementById('menuBtn').addEventListener('click', () => {
+  document.getElementById('menuNav').classList.toggle('open');
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+let currentUser = null;
+
+function toggleAuthModal() {
+  if (currentUser) {
+    document.getElementById('authFormArea').style.display = 'none';
+    document.getElementById('profileArea').style.display = 'block';
+    document.getElementById('profName').innerText = currentUser.name;
+    document.getElementById('profType').innerText = currentUser.type === 'company' ? 'Предприятие / Промышленный интегратор' : 'Студент / Исследователь';
+  } else {
+    document.getElementById('authFormArea').style.display = 'block';
+    document.getElementById('profileArea').style.display = 'none';
+  }
+  openModal('authModal');
+}
+
+function handleLogin() {
+  const type = document.getElementById('accType').value;
+  const name = document.getElementById('accName').value || (type === 'company' ? 'Предприятие' : 'Инженер');
+  currentUser = { type, name };
+
+  document.getElementById('authBtn').innerText = name + ' [Выйти]';
+  document.getElementById('lock-banner').style.display = 'none';
+  document.getElementById('protected-content').style.opacity = '1';
+  document.getElementById('protected-content').style.pointerEvents = 'auto';
+
+  closeModal('authModal');
+}
+
+function handleLogout() {
+  currentUser = null;
+  document.getElementById('authBtn').innerText = 'Авторизация';
+  document.getElementById('lock-banner').style.display = 'block';
+  document.getElementById('protected-content').style.opacity = '0.4';
+  document.getElementById('protected-content').style.pointerEvents = 'none';
+  closeModal('authModal');
+}
+
+function handleUpload() {
+  const title = document.getElementById('upTitle').value || 'Кастомный сменный модуль';
+  const mech = document.getElementById('upMech').value || 'Рычажный привод';
+  const author = currentUser ? currentUser.name : 'Инженер';
+
+  const tbody = document.getElementById('registryBody');
+  const row = document.createElement('tr');
+  row.setAttribute('data-type', 'wait');
+  row.innerHTML = `
+    <td><b>${author}</b><br><span class="mono">${currentUser && currentUser.type === 'company' ? 'Предприятие' : 'Исследователь'}</span></td>
+    <td>${title}</td>
+    <td>${mech}</td>
+    <td><a href="#" onclick="viewPassport('${title}', '${author}', '${mech}', '30 мм', '160 г', 'Индивидуальная тара')">Паспорт 📄</a></td>
+    <td><a href="#" onclick="downloadFile('Custom_Module.step')">STEP, CAD</a></td>
+    <td><span class="badge-status status-wait">⏳ На проверке ГрГУ</span></td>
+  `;
+  tbody.prepend(row);
+
+  closeModal('uploadModal');
+  alert('Модуль отправлен в Экспертный совет ГрГУ им. Янки Купалы!');
+}
+
+function downloadFile(fileName) {
+  alert('Инициализировано скачивание файла из реестра: ' + fileName);
+}
+
+function viewPassport(title, author, mech, stroke, weight, target) {
+  document.getElementById('passTitle').innerText = title;
+  document.getElementById('passAuthor').innerText = author;
+  document.getElementById('passMech').innerText = mech;
+  document.getElementById('passStroke').innerText = stroke;
+  document.getElementById('passWeight').innerText = weight;
+  document.getElementById('passTarget').innerText = target;
+  openModal('passportModal');
+}
+
+function filterRegistry(category) {
+  const btns = document.querySelectorAll('#page-docs .tab-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const rows = document.querySelectorAll('#registryBody tr');
+  rows.forEach(r => {
+    if (category === 'all' || r.getAttribute('data-type') === category) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+}
+
+function searchRegistry() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const rows = document.querySelectorAll('#registryBody tr');
+  rows.forEach(r => {
+    const text = r.innerText.toLowerCase();
+    r.style.display = text.includes(query) ? '' : 'none';
+  });
+}
+
+const modules = [
+  { name: "Стандартная насадка №1", desc: "Для захвата мелких деталей в ограниченном пространстве.", mech: "Коническая прямозубая", stroke: 23, img: "zahvat1.png" },
+  { name: "Стандартная насадка №2", desc: "Универсальный реечный модуль с увеличенным ходом.", mech: "Реечный механизм", stroke: 47, img: "zahvat2.png" },
+  { name: "Трехпальцевый захват", desc: "Самоцентрирующаяся фиксация тел вращения и колб с трех точек.", mech: "Цилиндрическая кривозубая", stroke: 35, img: "zahvat3.png" },
+  { name: "Насадка для маркеров", desc: "Специализированный модуль для подачи инструментов.", mech: "Кулачковая передача", stroke: 15, img: "zahvat4.png" }
+];
+
+function setModule(index) {
+  const btns = document.querySelectorAll('#page-design .tab-btn');
+  btns.forEach((b, i) => b.classList.toggle('active', i === index));
+
+  const data = modules[index];
+  document.getElementById('m-name').innerText = data.name;
+  document.getElementById('m-desc').innerText = data.desc;
+  document.getElementById('m-mech').innerText = data.mech;
+  document.getElementById('m-stroke').innerText = data.stroke;
+  document.getElementById('m-bar').style.width = (data.stroke / 47 * 100) + '%';
+  document.getElementById('m-img').src = data.img;
+}
+
+function generateSpec() {
+  const code = document.getElementById('specCode').value;
+  const out = document.getElementById('specOutput');
+  out.style.display = 'block';
+  out.innerText = `СПЕЦИФИКАЦИЯ ЕДИНИЦЫ ${code}:\n------------------------------------\n1. Корпус цилиндрический (PLA) - 1 шт.\n2. Перекладина несущая - 1 шт.\n3. Сервопривод MG996R - 1 шт.\n4. Микроконтроллер ESP32 Super Mini - 1 шт.`;
+}
+
+function calcFit() {
+  const shrink = parseFloat(document.getElementById('shrinkRate').value) || 0;
+  const gap = (0.2 + (shrink * 0.1)).toFixed(2);
+  document.getElementById('fitOutput').innerText = `Рекомендуемый конструктивный зазор байонета: ${gap} мм`;
+}
+</script>
+
+</body>
+</html>
