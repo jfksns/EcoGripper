@@ -56,6 +56,11 @@ figure{background:var(--tn);border:1px solid var(--ln);padding:12px;text-align:c
 figure img{max-width:100%;max-height:170px;display:block;margin:0 auto 8px}
 figure .ph{display:none;height:110px;align-items:center;justify-content:center;border:1px dashed var(--ln);margin-bottom:8px}
 figure.noimg img{display:none}figure.noimg .ph{display:flex}
+figure img{cursor:zoom-in;transition:opacity .15s}figure img:hover{opacity:.85}
+#lb{display:none;position:fixed;inset:0;background:rgba(8,11,16,.94);z-index:300;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{width:100%;height:100%;object-fit:contain;display:block}
+#lb button{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:3px;font:400 14px "PT Sans",sans-serif;padding:7px 14px;cursor:pointer}
 label{display:block;font-size:13px;color:var(--mu);margin:12px 0 4px}
 input,select{width:100%;padding:9px 11px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);font:inherit;font-size:15px;border-radius:3px}
 .res{margin-top:14px;padding:12px 14px;background:var(--tn);border-left:3px solid var(--ac);font-size:15px;white-space:pre-line}
@@ -145,16 +150,16 @@ footer{border-top:1px solid var(--ln);background:var(--sf);padding:24px 0;font-s
 <h1>Конструкция</h1>
 <p class="lead">Модель и сборка выполнены в КОМПАС-3D: соответствие ЕСКД, расчёт кинематических пар, подготовка деталей к послойной печати.</p>
 <div class="g3">
-<div class="c"><figure><img src="kreplenie.png" alt="Крепление" onerror="this.parentNode.classList.add('noimg')"><div class="ph">kreplenie.png</div>Рис. 1</figure><h3 style="margin-top:14px">Крепление к оси робота</h3><p>Резьбовое соединение с корпусом: жёсткая фиксация, выдерживает знакопеременные нагрузки, вибрации и крутящие моменты.</p></div>
-<div class="c"><figure><img src="nesemnaya.png" alt="Несъёмная часть" onerror="this.parentNode.classList.add('noimg')"><div class="ph">nesemnaya.png</div>Рис. 2</figure><h3 style="margin-top:14px">Несъёмная часть</h3><p>Цилиндрический корпус с электронным модулем. Несущая перекладина держит защитный корпус привода: ось вала привода совпадает с осью вала насадки.</p></div>
-<div class="c"><figure><img src="semnaya.png" alt="Съёмная часть" onerror="this.parentNode.classList.add('noimg')"><div class="ph">semnaya.png</div>Рис. 3</figure><h3 style="margin-top:14px">Съёмная часть</h3><p>Байонетно-поворотный замок: смена насадки за секунды, без инструмента.</p></div>
+<div class="c"><figure><img src="kreplenie.png" alt="Крепление" onerror="this.parentNode.classList.add('noimg')"><div class="ph">kreplenie.png</div></figure><h3 style="margin-top:14px">Крепление к оси робота</h3><p>Резьбовое соединение с корпусом: жёсткая фиксация, выдерживает знакопеременные нагрузки, вибрации и крутящие моменты.</p></div>
+<div class="c"><figure><img src="nesemnaya.png" alt="Несъёмная часть" onerror="this.parentNode.classList.add('noimg')"><div class="ph">nesemnaya.png</div></figure><h3 style="margin-top:14px">Несъёмная часть</h3><p>Цилиндрический корпус с электронным модулем. Несущая перекладина держит защитный корпус привода: ось вала привода совпадает с осью вала насадки.</p></div>
+<div class="c"><figure><img src="semnaya.png" alt="Съёмная часть" onerror="this.parentNode.classList.add('noimg')"><div class="ph">semnaya.png</div></figure><h3 style="margin-top:14px">Съёмная часть</h3><p>Байонетно-поворотный замок: смена насадки за секунды, без инструмента.</p></div>
 </div>
 
 <div class="sec"><h2>Линейка сменных насадок</h2>
 <div class="tabs" id="mt"></div>
 <div class="g2" style="margin-top:0"><div class="c"><h3 id="mn"></h3><p id="md" style="color:var(--mu)"></p>
 <p><b>Передача:</b> <span id="mm"></span></p><p><b>Рабочий ход:</b> <span id="ms"></span> мм</p><div class="bar"><i id="mbar"></i></div><p style="font-size:13px;color:var(--mu);margin-top:6px">Шкала — относительно максимального хода линейки (47 мм)</p></div>
-<div class="c"><figure><img id="mi" alt="Насадка" onerror="this.parentNode.classList.add('noimg')" onload="this.parentNode.classList.remove('noimg')"><div class="ph" id="mph"></div><span id="mfig"></span></figure></div></div></div>
+<div class="c"><figure><img id="mi" alt="Насадка" onerror="this.parentNode.classList.add('noimg')" onload="this.parentNode.classList.remove('noimg')"><div class="ph" id="mph"></div></figure></div></div></div>
 
 <div class="sec"><h2>Материалы изготовления</h2>
 <div class="sc"><table><tr><th>Материал</th><th>Назначение</th></tr>
@@ -234,6 +239,7 @@ footer{border-top:1px solid var(--ln);background:var(--sf);padding:24px 0;font-s
 <div class="row"><button class="btn" onclick="submitM()">Отправить</button><button class="btn g" onclick="cl('um')">Закрыть</button></div></div></div>
 
 <div class="md" id="pm"><div class="mc"><h3 id="pt2"></h3><table><tbody id="pb"></tbody></table><div class="row"><button class="btn" onclick="cl('pm')">Закрыть</button></div></div></div>
+<div id="lb" role="dialog" aria-label="Просмотр изображения"><img alt=""><button type="button">Закрыть ✕</button></div>
 <div id="toast"></div>
 
 <script>
@@ -279,7 +285,7 @@ s.push({a:user.name,o:user.type==='company'?'Предприятие':'Иссле
 ls('eg_sub',s);cl('um');['ut','ukm','us','uw','uc'].forEach(x=>$(x).value='');filt='wait';renderReg();toast('Модуль отправлен на экспертную проверку')}
 function setMod(i){const m=MODS[i];$('mt').innerHTML=MODS.map((x,j)=>`<button class="${j===i?'on':''}" onclick="setMod(${j})">${x.n.replace('Насадка барабанного типа для маркеров','Для маркеров').replace('Стандартная насадка','Стандартная')}</button>`).join('');
 $('mn').textContent=m.n;$('md').textContent=m.d;$('mm').textContent=m.m;$('ms').textContent=m.s;$('mbar').style.width=(m.s/47*100)+'%';
-$('mi').parentNode.classList.remove('noimg');$('mi').src=m.i;$('mph').textContent=m.i;$('mfig').textContent=m.f}
+$('mi').parentNode.classList.remove('noimg');$('mi').src=m.i;$('mph').textContent=m.i}
 function pick(){const m=MODS[+$('sel').value];$('pr').textContent=m.n+'\nПередача: '+m.m+', ход '+m.s+' мм.\n'+m.d}
 function eco(){const n=+$('en').value||0,a=+$('ea').value||0,b=+$('eb').value||0,m=+$('em').value||0;
 const A=n*a,B=b+n*m,d=A-B;const e=$('er');e.style.display='block';
@@ -297,6 +303,10 @@ SP[1]=['','',(mt?code:code),'','Сборочный чертёж'];
 $('sb').innerHTML=SP.map(r=>r[2]&&r[0]===''&&r[1]===''&&!r[3]?`<tr><td></td><td></td><td style="text-align:center;text-decoration:underline">${esc(r[2])}</td><td></td><td></td></tr>`:`<tr>${r.map(x=>`<td>${esc(x)}</td>`).join('')}</tr>`).join('');$('sw').style.display='block';$('sw').scrollIntoView({behavior:'smooth',block:'nearest'})}
 function cp(){if(!SP.length)spec();const t='Поз.\tОбозначение\tНаименование\tКол.\tПримечание\n'+SP.map(r=>r.join('\t')).join('\n');
 try{navigator.clipboard.writeText(t).then(()=>toast('Спецификация скопирована'),()=>toast('Не удалось скопировать'))}catch(e){toast('Не удалось скопировать')}}
+const lb=$('lb'),lbi=lb.querySelector('img');
+document.addEventListener('click',e=>{const t=e.target;if(t.matches&&t.matches('figure img')&&t.getAttribute('src')){lbi.src=t.currentSrc||t.src;lbi.alt=t.alt;lb.classList.add('on')}});
+lb.addEventListener('click',()=>lb.classList.remove('on'));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.classList.remove('on')});
 user=ls('eg_user');setMod(0);pick();auth();route();
 </script>
 </body>
